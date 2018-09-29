@@ -1,6 +1,7 @@
 package juns
 
 import scala.io.Source
+import scala.collection.mutable.Map
 
 /**
  * @author ${user.name}
@@ -24,19 +25,18 @@ object App {
     val xmlRaw = scala.xml.XML.loadString(real)
     println(xmlRaw)
 
+    var resMap: Map[String, String] = Map()
+
     for{
       item <- xmlRaw \\ "item"
       aptName <- item \ "아파트"
       money <- item \ "거래금액"
     } yield {
-      println("아파트 명칭" + aptName + "거래 금액" + money)
+//      println("아파트 명칭" + aptName + "거래 금액" + money)
+      resMap += (aptName.toString() -> money.toString())
     }
 
-//    val item = xmlRaw \\ "item"
-//    item.foreach(v =>
-//      println(v \ "아파트")
-//    )
-
+    resMap.foreach(v => println(v))
 
 
     // Data preprocessing with spark core lib
