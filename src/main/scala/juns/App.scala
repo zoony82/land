@@ -4,8 +4,9 @@ import scala.collection.mutable.Map
 import scala.io.Source
 import java.io.File
 import java.io.PrintWriter
-
 import scala.xml.{Elem, Node}
+import org.apache.spark
+
 
 /**
  * @author ${user.name}
@@ -35,15 +36,18 @@ object App {
         item: Node <- xmlRaw \\ "item"
         aptName: Node <- item \ "아파트"
         money: Node <- item \ "거래금액"
+        month: Node <- item \ "월"
+        day: Node <- item \ "일"
       } yield {
         //      println("아파트 명칭" + aptName + "거래 금액" + money)
-        resMap += (v.toString() + aptName.toString() -> money.toString())
+        resMap += (v.toString() + aptName.toString().replace("아파트","") + month.toString().replace("월","") + day.toString().replace("일","") -> money.toString().replace("거래금액",""))
       }
+      println("iter : " + v)
     }
 
-    val writer: PrintWriter = new PrintWriter(new File("aptMoney.txt"))
+    val writer: PrintWriter = new PrintWriter(new File("APT_Transaction_Price.csv"))
 
-    resMap.foreach(v => writer.write(v._1+":"+v._2 + "\n"))
+    resMap.foreach(v => writer.write(v._1.replace("<>",",").replace("</>","")+v._2.replace("<>",",").replace("</>","").replace(" ","") + "\n"))
     writer.close()
 
     // Data preprocessing with spark core lib
